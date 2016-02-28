@@ -5,10 +5,12 @@ tags: VIM
 category: 工具框架
 toc: true
 ---
-
 作为一名码农最痛苦的事情是写代码的过程中需要不断的切换键盘和鼠标，而VIM的最大特点就是不需要鼠标，所以我打算给VIM一个机会。而本文则是为了记录VIM的使用技巧以及插件，供往后参考，同时加强学习的效果。
-
 ### 实用技巧
+#### 复制粘贴
+vi提供多个寄存器（registry），这就意味着我们可以同时拷贝/粘贴多个内容。命令*:reg*显示当前寄存器中的内容，如下图所示，其中红色框框中的为寄存器名称或地址，可以通过该地址来指定复制到/粘贴自改寄存器。
+![VI-当前寄存器中的内容](/content/images/2016/02/vi_reg.jpg)
+值得注意的是从vi外部拷贝的内容（系统粘贴板）是存放在寄存器**”***中的，可以通过快捷键**“ * p**进行粘贴(以此敲入"\*p三个键)。相反需要拷贝到系统粘贴板以供其他程序使用时，可以选中内容然后通过快捷键**" * p**拷贝至系统粘贴板中。
 #### 多窗口/文件(buffer)操作
 现在不管多小的项目，肯定不可能是单个文件构成的，程序员往往需要同时编辑多个文件。由此多个窗口同时编辑就显得尤其重要。
 vim中拆分窗口的命令为*:split*（水平拆分/上下拆分）和*:vsplit*（垂直拆分/左右拆分），快捷键分别为*ctrl+w s*和*ctrl+w v*。
@@ -22,7 +24,6 @@ vim中拆分窗口的命令为*:split*（水平拆分/上下拆分）和*:vsplit
 #### [pathogen](https://github.com/tpope/vim-pathogen)
 管理插件的插件，其用途是管理"runtimepath"。换言之，原来vim的插件都是在一个目录下的，当插件数量很多的时候，存放插件的目录就非常混乱，维护成本很高；而pathogen可以将插件存放在各自的目录下。所以，有了pathogen，妈妈再也不用担心我把插件搞得满地都是了。
 - 安装
-
 ``` bash
 $ mkdir -p ~/.vim/autoload ~/.vim/bundle
 $ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
@@ -34,7 +35,6 @@ execute pathogen#infect()
 #### [NERDTree](https://github.com/scrooloose/nerdtree)
 侧栏显示目录结构，并且支持简单的文件操作。
 - 安装
-
 ``` bash
 $ cd ~/.vim/bundle
 $ git clone https://github.com/scrooloose/nerdtree.git
@@ -48,15 +48,12 @@ autocmd vimenter * NERDTree
 #### [vim-markdown](https://github.com/plasticboy/vim-markdown)
 Vim对markdown语法支持的插件，在vim下写文档必备插件。本文也是vim+这个插件编写完成。
 - 安装
-
 ``` bash
 cd ~/.vim/bundle
 git clone https://github.com/plasticboy/vim-markdown.git
 ```
-
 禁止markdown的folding功能。
 ``` 
 let g:vim_markdown_folding_disabled = 1
 ```
 同样，*:Helptags*命令刷新帮助文档。
-
