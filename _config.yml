@@ -72,6 +72,11 @@ deploy:
   host: 107.170.215.224
   user: blog
   root: /var/www/html
+  port: 22
+  delete: true
+  args: 
+  verbose: true
+  ignore_errors: false  
 
 sitemap:
   path: sitemap.xml
