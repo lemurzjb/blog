@@ -7,6 +7,12 @@ toc: true
 ---
 作为一名码农最痛苦的事情是写代码的过程中需要不断的切换键盘和鼠标，而VIM的最大特点就是不需要鼠标，所以我打算给VIM一个机会。而本文则是为了记录VIM的使用技巧以及插件，供往后参考，同时加强学习的效果。
 ### 实用技巧
+#### 解决"Small version without GUI"的问题
+进入VIM，输入命令*:version*，如果结果显示当前版本为"Small version without GUI",则需要安装*vim-gui-common*，否则下面的功能都无法使用。  
+在Ubuntu下的安装命令为：
+``` bash
+sudo apt-get install vim-gui-common
+```
 #### 复制粘贴
 vim提供多个寄存器（registry），这就意味着我们可以同时拷贝/粘贴多个内容。命令*:reg*显示当前寄存器中的内容，如下图所示，其中红色框框中的为寄存器名称或地址，可以通过该地址来指定复制到/粘贴自该寄存器。
 ![VI-当前寄存器中的内容](/content/images/2016/02/vi_reg.jpg)
@@ -19,6 +25,15 @@ vim中拆分窗口的命令为*:split*（水平拆分/上下拆分）和*:vsplit
 ``` bash
 :buffers, :ls, :files #显示当前打开的文件（buffer）
 :b(n) #打开编号为n的文件（buffer）
+```
+#### 自动缩进、TAB宽度
+**gg=G** - 全文自动缩进，不包括括号，在一般模式下连续输入’g’, ‘g’, ‘=’, ‘G’四个键。其中**gg**光标定位到文件开始的位置，**=**刷自动缩进命令，**G**光标移动到最后一行行首。因此这个命令就是全文自动缩进。
+**=i}** - 光标所在的{}块自动缩进。
+设定tab宽度以及用空格替换TAB：
+``` ruby
+set tabstop=4 #tab长度设为4
+set shiftwidth=4 #自动缩进长度设为4 
+set expandtab #tab有空格填充
 ```
 ### 常用插件 
 #### [pathogen](https://github.com/tpope/vim-pathogen)

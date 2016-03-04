@@ -34,7 +34,7 @@ theme: maupassant
 ``` bash
 $ hexo server -p 5000 #启动hexo服务器，监听端口5000
 ```
-### 一键部署（不清楚什么原因，这个方法有问题，目前我是用了下面Jenkins的方法）
+### 一键部署
 日志写完本地检查测试通过，就要上传至blog服务器端。这里我通过rsync将生成的静态页面同步到blog服务器上的对应路径。
 安装插件*hexo-deployer-rsync*
 ``` bash
@@ -47,7 +47,13 @@ deploy:
 	host: <blog server hostname or ip>
 	user: <user>
 	root: <root>
+	port: 22
+	delete: true
+	args: 
+	verbose: true
+	ignore_errors: false
 ```
+**注意：尽管有些属性有默认值，但是还是得全部写上，否则会出现莫名的问题。**
 最后通过下面命令生成静态页面并且同步至blog服务器。
 ``` bash
 $ hexo generate --deploy
