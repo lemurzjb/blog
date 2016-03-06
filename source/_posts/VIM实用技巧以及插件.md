@@ -34,11 +34,13 @@ vim中拆分窗口的命令为*:split*（水平拆分/上下拆分）和*:vsplit
 set tabstop=4 #tab长度设为4
 set shiftwidth=4 #自动缩进长度设为4 
 set expandtab #tab有空格填充
+set autoindent #自动缩进
+set smartindent 
 ```
 ### 常用插件 
 #### [pathogen](https://github.com/tpope/vim-pathogen)
 管理插件的插件，其用途是管理"runtimepath"。换言之，原来vim的插件都是在一个目录下的，当插件数量很多的时候，存放插件的目录就非常混乱，维护成本很高；而pathogen可以将插件存放在各自的目录下。所以，有了pathogen，妈妈再也不用担心我把插件搞得满地都是了。
-- 安装
+**安装**
 ``` bash
 $ mkdir -p ~/.vim/autoload ~/.vim/bundle
 $ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
@@ -49,7 +51,7 @@ execute pathogen#infect()
 ```
 #### [NERDTree](https://github.com/scrooloose/nerdtree)
 侧栏显示目录结构，并且支持简单的文件操作。
-- 安装
+**安装**
 ``` bash
 $ cd ~/.vim/bundle
 $ git clone https://github.com/scrooloose/nerdtree.git
@@ -62,7 +64,7 @@ autocmd vimenter * NERDTree
 ```
 #### [vim-markdown](https://github.com/plasticboy/vim-markdown)
 Vim对markdown语法支持的插件，在vim下写文档必备插件。本文也是vim+这个插件编写完成。
-- 安装
+**安装**
 ``` bash
 cd ~/.vim/bundle
 git clone https://github.com/plasticboy/vim-markdown.git
@@ -72,3 +74,39 @@ git clone https://github.com/plasticboy/vim-markdown.git
 let g:vim_markdown_folding_disabled = 1
 ```
 同样，*:Helptags*命令刷新帮助文档。
+#### [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+代码自动补全。依赖于基础开发库和cmake，以及python的头文件，在ubuntu下通过下面命令安装这些依赖。
+``` bash
+sudo apt-get install build-essential cmake
+sudo apt-get install python-dev python3-dev
+```
+**安装**
+``` bash
+cd ~/.vim/bundle
+git clone https://github.com/Valloric/YouCompleteMe.git
+git submodle update --init --recursive
+cd ~/.vim/bundle/YouCompleteMe
+./install.py --tern-completer #自动补全javascript, 需要事先安装nodejs和npm
+```
+#### [emmetvim](https://github.com/mattn/emmet-vim)
+这个就不多说了，vim下编辑html和css的倚天剑。
+**安装**
+``` bash
+cd ~/.vim/bundle
+git clone https://github.com/mattn/emmet-vim.git
+```
+重新启动VIM，输入*html:5*然后*ctrl+y*，最后按*，*(逗号)键试试看。
+#### [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
+代码格式化，无需解释。
+autoformat本身不会对代码作格式化，他只是调用第三方程序，因此根据所编辑文件类型不同，需要安装对应的第三方程序。具体什么格式对应什么程序，查看上面的官网地址。
+**安装**
+``` bash
+cd ~/.vim/bundle
+git clone https://github.com/Chiel92/vim-autoformat.git
+```
+为了格式化html/javascript/css文件，需要安装js-beautify。
+``` bash
+npm install -g js-beautify
+```
+重启VIM，打开某个js源码文件，敲入命令**:Autoformat**，效果如何？
+
