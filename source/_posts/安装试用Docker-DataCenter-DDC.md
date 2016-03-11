@@ -34,9 +34,33 @@ sudo docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp
 ![UCP仪表盘](/content/images/2016/03/ucp-dashboard.png)
 然后安装UCP的replica，并加入UCP的集群，在VM3中执行下面指令：
 ``` bash
-sudo docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp join -i --host-address xxx.xxx.xxx.xxx
+sudo docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp join --replica -i --host-address xxx.xxx.xxx.xxx
 ```
-程序提示输入UCP controller的URL，输入https://xxx.xxx.xxx.xxx (UCP controller的ip地址)，后面询问是否相信这个服务器并且继续加入UCP的集群时，输入y然后回车。后面接着需要输入UCP的管理员用户和密码，即我们之前登陆UCP的用户密码（admin/orca），同样等待几分钟后就提示输入"Additional aliases"，我们直接敲回车即可。回头我们在来看UCP的仪表盘，这时候Nodes数量已经变为2了。
+程序提示输入UCP controller的URL，输入https://xxx.xxx.xxx.xxx (UCP controller的ip地址)，后面询问是否相信这个服务器并且继续加入UCP的集群时，输入y然后回车。后面接着需要输入UCP的管理员用户和密码，即我们之前登陆UCP的用户密码（admin/orca），同样等待几分钟后就提示输入"Additional aliases"，我们直接敲回车即可。回头我们在来看UCP的仪表盘，这时候Nodes数量已经变为2了。根据UCP的官方文档，一个UCP的集群中最多只能允许（n-1)/2个节点失效，n是该集群中controller和replica的总数，所以当n为3的时候才容许有一个节点失效。新增UCP的replica节点，就是在想加入的节点运行上面的命令即可。
 ![UCP仪表盘2](/content/images/2016/03/ucp-dashboard2.png)
 到此为止，安装过程就结束了。注意到我们的DTR节点并没有自动出现在UCP的仪表盘，接下来我们要研究下如何将其他的Docker引擎节点也加入到UCP的管理之下。
-### 玩转Docker Datacenter（DDC）
+### 初识Docker Datacenter（DDC）
+#### Hello World
+依照惯例我们先向世界问好，如下图所示，初步验证通过。
+![Hello World!](/content/images/2016/03/hello-world.png)
+#### 管理新节点
+接下来我们再新建一个虚拟机，给予512M的内存，同样方法安装Docker引擎，我们要把这个新的节点加入到UCP的管理之下。UCP底层也是通过Docker Swarm来管理Docker集群的，所以这个问题就回到了如何建立Swarm集群。仔细查看UCP Controller上的容器，我们会发现有两个容器分别名为*ucp-swarm-manager*和*ucp-kv*，再看他们的启动命令，大致猜测这个集群采用了需要TLS认证的键值发现机制。但是在DDC中不需要这么麻烦，UCP提供了更简单的命令来达到同样的目的。
+``` bash
+sudo docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp join -i --host-address xxx.xxx.xxx.xxx
+```
+什么这不是跟上面增加ucp replia节点一样么？差不多，但不完全一样，注意到我们这个命令少了*--replica*参数了么？！就这么简单，ucp帮我们搞定了所有的认证相关的步骤。过程中，会提示输入ucp controller的地址，以及管理员账户和密码，其他的只要yes或者直接回车就搞定了。重复以上过程，我们再加入一个节点。到目前位置我们有4个节点了（一个ucp controller，一个ucp replica以及两个普通的节点），如下图所示。
+![四个节点的UCP](/content/images/2016/03/ucp-nodes.png)
+#### 搭建Elastic Search的集群
+现在我们尝试通过ucp来搭建一个由五个节点组成的elasticsearch集群。首先登陆ucp的管理界面，选择“Containers”菜单。指定image名字为*elasticsearch*，容器名字为*elasticsearch*，添加两个volumes，分别为*/tmp:/usr/share/elasticsearch/data*和*/tmp:/usr/share/elasticsearch/config*，然后点击“Run Container”，之后就是静静等待下载镜像并启动。经过几分钟或者十几分钟后（根据网络情况会有差异），名为elasticsearch的容器起来了，运行在一个普通节点上。接下来我们回到“Container”菜单，单击*elasticsearch*容器，进入该容器的详情界面，右上角有4个蓝色的按钮，点击其中的“Scale”，然后在弹出框中输入3，点击“Scale”，结果是没有结果，没有按照预期起来3个elasticsearch的容器，不清楚发生了什么。猜测是因为我们指定了容器的名称，当要起来3个的时候，DDC尝试用相同的名字去启动另外2个容器的时候发现名字冲突了，所以失败了。当然这只是猜测，我们之后回来在看这个问题。
+### 小节
+DDC初步使用的感觉是 - 
+1. 提供了一个图形化的界面可以让运维甚至开发人员直观的看到swarm集群的状态，有多少节点，多少个镜像，多少个运行中的容器，CPU以及内存的使用情况；
+2. 可以通过图形界面来进行简单的镜像以及容器的管理；
+3. 对我来说最有用的，就是简化了将节点纳入集群管理的过程；
+4. 在运行的容器详情界面提供了一个console的功能，可以让管理人员直接在网页登陆到容器中，执行命令行操作，这个功能有的时候是非常好用的。
+
+然而对于上百个甚至上千个节点的集群，管理人员肯定还是得用脚本或API的方式来进行管理。DDC有价值的地方个人觉得是在于DTR以及提供技术支持的Docker引擎。
+
+
+
+
